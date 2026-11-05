@@ -1,16 +1,28 @@
-Sla 
-```html
 <!DOCTYPE html>
 <html lang="nl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Weer in jou">
+<meta name="theme-color" content="#15171a">
 <title>Het weer in jou</title>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Patrick+Hand&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" rel="stylesheet">
 <style>
-html,body{margin:0;height:100%;background:#15171a}
+html,body{margin:0;height:100%;background:#15171a;overflow:hidden}
 body{display:flex;align-items:center;justify-content:center;font-family:'Patrick Hand',sans-serif}
+body.locked .app{visibility:hidden}
+#lock{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#15171a;z-index:10}
+#lock form{background:#F7F0E1;border:1.5px solid #4A3524;border-radius:6px;box-shadow:0 3px 0 #22170F;padding:18px 22px;color:#22170F;font-size:18px;text-align:center;width:min(300px,80vw)}
+#lock input{display:block;width:100%;box-sizing:border-box;margin:10px 0;padding:6px 8px;font-family:inherit;font-size:18px;border:1.5px solid #8C7A60;border-radius:4px;background:#fff;color:#22170F}
+#lock button{font-family:inherit;font-size:18px;padding:3px 18px;background:#4A3524;color:#F7F0E1;border:1px solid #4A3524;border-radius:4px;cursor:pointer}
+#le{color:#993C1D;font-size:15px;min-height:18px;margin-top:6px}
+#turn{display:none;position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:5;align-items:center;gap:6px;padding:4px 12px;background:#F7F0E1;color:#22170F;border:1.5px solid #4A3524;border-radius:4px;box-shadow:0 2px 0 #22170F;font-size:17px;white-space:nowrap;pointer-events:none}
+#turn i{color:#6E4A2A}
+@media (orientation:portrait) and (max-width:700px){#turn{display:flex}}
 @keyframes snow{from{transform:translate(0,-20px)}to{transform:translate(-140px,390px)}}
 @keyframes rain{from{transform:translate(0,-20px)}to{transform:translate(-60px,390px)}}
 @keyframes flash{0%,92%,100%{opacity:0}94%,97%{opacity:.25}}
@@ -35,18 +47,21 @@ body{display:flex;align-items:center;justify-content:center;font-family:'Patrick
 @keyframes fadein{from{opacity:0}to{opacity:1}}
 @keyframes ink{from{stroke-dashoffset:200}to{stroke-dashoffset:0}}
 @keyframes note{0%{transform:translateY(0);opacity:0}20%{opacity:1}100%{transform:translateY(-14px);opacity:0}}
-.app{position:relative;width:min(100vw,177.78vh);border-radius:14px;overflow:hidden;container-type:inline-size;background:#23262B}
+.app{position:relative;width:min(100vw,177.78vh);width:min(100vw,177.78dvh);border-radius:14px;overflow:hidden;container-type:inline-size;background:#23262B}
+:fullscreen .app{border-radius:0}
+:-webkit-full-screen .app{border-radius:0}
 .hand{font-family:'Caveat',cursive;font-weight:700}
-.sign{position:absolute;left:1.8%;width:22%;display:flex;align-items:center;gap:5px;padding:1px 7px;font-family:'Patrick Hand',sans-serif;font-size:clamp(15px,3cqw,22px);line-height:1.15;background:#F7F0E1;color:#22170F;border:1.5px solid #4A3524;border-radius:4px;text-align:left;cursor:pointer;white-space:nowrap;box-shadow:0 2px 0 #22170F;animation:fadein .5s ease}
+.sign{position:absolute;left:1.8%;width:22%;display:flex;align-items:center;gap:5px;padding:1px 7px;font-family:'Patrick Hand',sans-serif;font-size:2.8cqw;line-height:1.15;background:#F7F0E1;color:#22170F;border:1.5px solid #4A3524;border-radius:4px;text-align:left;cursor:pointer;white-space:nowrap;box-shadow:0 2px 0 #22170F;animation:fadein .5s ease}
 .sign i{font-size:.9em;color:#6E4A2A}
 .sign:hover,.sign.on{background:#F0D9A8}
 .txt{position:absolute;pointer-events:none}
 #topbar{position:absolute;top:2.5%;right:2%;display:flex;gap:6px}
-.tb{display:flex;align-items:center;gap:5px;padding:1px 9px;font-family:'Patrick Hand',sans-serif;font-size:clamp(14px,2.8cqw,20px);line-height:1.2;background:#F7F0E1;color:#22170F;border:1.5px solid #4A3524;border-radius:4px;box-shadow:0 2px 0 #22170F;cursor:pointer}
+.tb{display:flex;align-items:center;gap:5px;padding:1px 9px;font-family:'Patrick Hand',sans-serif;font-size:2.6cqw;line-height:1.2;background:#F7F0E1;color:#22170F;border:1.5px solid #4A3524;border-radius:4px;box-shadow:0 2px 0 #22170F;cursor:pointer}
 .tb i{font-size:.95em;color:#6E4A2A}
 .tb:hover,.tb.on{background:#F0D9A8}
-#say{width:100%;height:100%;box-sizing:border-box;color:#EEE8DC;font-family:'Patrick Hand',sans-serif;font-size:19px;line-height:1.3;overflow-wrap:break-word;animation:fadein .6s ease;text-shadow:0 1px 2px #15171a}
-#say textarea{display:block;width:100%;height:62px;margin-top:5px;box-sizing:border-box;background:transparent;border:none;border-bottom:1.5px dashed #9FB08A;color:#F5EDDC;font-family:inherit;font-size:1em;line-height:1.3;padding:2px 0;resize:none;outline:none;text-shadow:inherit}
+#say{position:absolute;overflow-y:auto;scrollbar-width:none;box-sizing:border-box;color:#EEE8DC;font-family:'Patrick Hand',sans-serif;font-size:2.9cqw;line-height:1.3;overflow-wrap:break-word;animation:fadein .6s ease;text-shadow:0 1px 2px #15171a}
+#say::-webkit-scrollbar{display:none}
+#say textarea{display:block;width:100%;height:9.5cqw;margin-top:5px;box-sizing:border-box;background:transparent;border:none;border-bottom:1.5px dashed #9FB08A;color:#F5EDDC;font-family:inherit;font-size:1em;line-height:1.3;padding:2px 0;resize:none;outline:none;text-shadow:inherit}
 #say textarea::placeholder{color:#9FB08A}
 #say .big{font-size:1.5em;color:#E3B566;line-height:1.2}
 #say button{font-family:inherit;font-size:.9em;padding:1px 12px;margin-top:5px;background:#F0E6D2;color:#3A2A1C;border:1px solid #5A4330;border-radius:3px;cursor:pointer;text-shadow:none}
@@ -86,7 +101,8 @@ body{display:flex;align-items:center;justify-content:center;font-family:'Patrick
 .fb{transform-box:fill-box}
 </style>
 </head>
-<body>
+<body class="locked">
+<div id="turn"><i class="ti ti-device-mobile-rotated"></i>Draai je telefoon</div>
 <div class="app" id="app">
 <svg viewBox="0 0 640 360" width="100%" style="display:block">
 <g id="sky"></g>
@@ -142,17 +158,31 @@ body{display:flex;align-items:center;justify-content:center;font-family:'Patrick
 <g id="notes" style="display:none"><text x="298" y="232" font-size="14" fill="#E3B566" style="animation:note 2.6s ease-out infinite">&#9834;</text><text x="336" y="226" font-size="12" fill="#E3B566" style="animation:note 2.6s ease-out -1.3s infinite">&#9835;</text></g>
 <g id="precip" style="pointer-events:none"></g>
 <rect id="flashR" width="640" height="360" fill="#C9D6E0" style="animation:flash 6s infinite;pointer-events:none"/>
-<foreignObject id="fo" x="352" y="48" width="262" height="186"><div xmlns="http://www.w3.org/1999/xhtml" id="say"></div></foreignObject>
 </svg>
+<div id="say"></div>
 <div id="title" class="txt hand" style="left:3%;top:5%;width:40%;text-shadow:0 1px 3px #0d0f11,0 0 6px #0d0f11"></div>
 <div id="signs"></div>
-<div id="topbar"><button id="home" class="tb" style="display:none"><i class="ti ti-home"></i>Home</button><button id="sndb" class="tb" aria-pressed="false"><i class="ti ti-volume-off"></i>Klanken</button></div>
-<div class="txt hand" style="left:3%;bottom:1%;font-size:clamp(13px,2.4cqw,18px);color:#D3E0C2;text-shadow:0 1px 3px #0d0f11">echt niet goed? bel 113</div>
+<div id="topbar"><button id="home" class="tb" style="display:none"><i class="ti ti-home"></i>Home</button><button id="sndb" class="tb" aria-pressed="false"><i class="ti ti-volume-off"></i>Klanken</button><button id="fsb" class="tb" style="display:none" aria-label="Volledig scherm" title="Volledig scherm"><i class="ti ti-maximize"></i></button></div>
+<div class="txt hand" style="left:3%;bottom:1%;font-size:2.4cqw;color:#D3E0C2;text-shadow:0 1px 3px #0d0f11">echt niet goed? bel 113</div>
 <div id="cfg"><div id="card"></div></div>
 </div>
+<div id="lock"><form id="lf"><div class="hand" style="font-size:32px;line-height:1">Het weer in jou</div><div style="margin-top:6px">Vul het wachtwoord in</div><input id="lp" type="password" autocomplete="current-password" aria-label="Wachtwoord"><button type="submit">Open</button><div id="le"></div></form></div>
 <script>
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const PW='cmVnZW5ib29n',OK='weerInJou.ok';
+function unlock(){document.body.classList.remove('locked');$('lock').remove()}
+(function(){let ok=false;try{ok=localStorage.getItem(OK)===PW}catch(e){}
+if(ok){unlock();return}
+$('lp').focus();
+$('lf').onsubmit=e=>{e.preventDefault();let v='';try{v=btoa($('lp').value.trim())}catch(x){}
+if(v===PW){try{localStorage.setItem(OK,PW)}catch(x){}unlock()}else{$('le').textContent='Dat klopt niet, probeer het opnieuw.';$('lp').value='';$('lp').focus()}}})();
+const fsRoot=document.documentElement,fsOK=!!(document.fullscreenEnabled||document.webkitFullscreenEnabled);
+const isFs=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+function syncFs(){const b=$('fsb'),f=isFs();b.innerHTML='<i class="ti '+(f?'ti-minimize':'ti-maximize')+'"></i>';b.classList.toggle('on',f);b.setAttribute('aria-label',f?'Volledig scherm sluiten':'Volledig scherm');b.title=b.getAttribute('aria-label')}
+if(fsOK){$('fsb').style.display='flex';
+$('fsb').onclick=()=>{if(isFs()){(document.exitFullscreen||document.webkitExitFullscreen).call(document)}else{const r=(fsRoot.requestFullscreen||fsRoot.webkitRequestFullscreen).call(fsRoot);const lockLand=()=>{try{screen.orientation.lock('landscape').catch(()=>{})}catch(e){}};if(r&&r.then)r.then(lockLand).catch(()=>{});else lockLand()}};
+document.addEventListener('fullscreenchange',syncFs);document.addEventListener('webkitfullscreenchange',syncFs)}
 const Q1=["Waar word je echt blij van, en hoe vaak doe je dat?","Wat zou je graag vaker doen, en wat houdt je tegen?","Wat doe je als je nergens aan hoeft, en wat zegt dat over jou?","Welk compliment kreeg je onlangs, en klopt het?"];
 const Q2=["Wat zeg je tegen jezelf op een drukke dag, en helpt dat?","Wat heb je deze week goed gedaan?","Welke gewoonte geeft jou de meeste stress, en wat zou je eraan kunnen veranderen?","Wat kun je loslaten om meer rust te krijgen?"];
 const P={
@@ -243,9 +273,9 @@ else{c=document.createElementNS(NS,'line');const d=1.3+Math.random()*.6,x=Math.r
 let bush='';[[140,320,12],[180,322,14],[400,318,15],[440,320,18],[620,318,16]].forEach(b=>{bush+='<circle cx="'+b[0]+'" cy="'+b[1]+'" r="'+b[2]+'" fill="#18231A" stroke="#101711" stroke-width="1.5"/><circle cx="'+(b[0]-b[2]*.7)+'" cy="'+(b[1]+3)+'" r="'+(b[2]*.7)+'" fill="#223024" stroke="#101711" stroke-width="1.5"/>'});
 for(let x=8;x<640;x+=37){bush+='<path d="M'+x+' 322q-3-10-8-13M'+x+' 322q1-12 4-16M'+x+' 322q4-8 10-10" stroke="#4A5E3A" stroke-width="1.6" fill="none" stroke-linecap="round"/>'}
 $('bush').innerHTML=bush;
-const say=$('say'),fire=$('fire'),notes=$('notes'),fo=$('fo');let timer,cur=null,gs=null;
-function put(h){say.style.animation='none';say.offsetHeight;say.style.animation='';say.innerHTML=h}
-function area(x,y,w,h){fo.setAttribute('x',x);fo.setAttribute('y',y);fo.setAttribute('width',w);fo.setAttribute('height',h)}
+const say=$('say'),fire=$('fire'),notes=$('notes');let timer,cur=null,gs=null;
+function put(h){say.style.animation='none';say.offsetHeight;say.style.animation='';say.innerHTML=h;say.scrollTop=0}
+function area(x,y,w,h){const s=say.style;s.left=x/6.4+'%';s.top=y/3.6+'%';s.width=w/6.4+'%';s.height=h/3.6+'%'}
 function paint(m){const sk=m.sky;$('sky').innerHTML='<rect width="640" height="360" fill="'+sk[0]+'"/><rect y="150" width="640" height="210" fill="'+sk[1]+'"/><rect y="235" width="640" height="125" fill="'+sk[2]+'"/>';
 $('back').innerHTML=back(m);$('h1').setAttribute('fill',m.h[0]);$('h2').setAttribute('fill',m.h[1]);$('g1').setAttribute('fill',m.g[0]);$('g2').setAttribute('fill',m.g[1]);$('gdeco').innerHTML=gdeco(m);
 ['l1','l2','l3','l4'].forEach((c,i)=>document.querySelector('.'+c).setAttribute('fill',m.lv[i]));
@@ -253,7 +283,7 @@ $('caps').style.display=m.caps?'':'none';$('postcap').style.display=m.caps?'':'n
 const warm=m.fire>=1;$('firelit').style.display=warm?'':'none';$('trunklit').style.opacity=warm?.55:.25;$('glowE').setAttribute('opacity',warm?.22:.1);
 $('fireBase').style.transform='scale('+m.fire+')';
 $('deer').innerHTML=m.deer.startsWith('lie')?deerLie(m.deer==='lie-shiver',!!m.caps):deerStand(m.deer);precip(m)}
-function setTitle(t,s){$('title').innerHTML='<div style="font-size:clamp(22px,5.4cqw,40px);line-height:.9;color:#FFF8EA">'+t+'</div><svg viewBox="0 0 120 10" style="display:block;width:55%;height:auto;margin:1px 0 2px"><path d="M2 6C25 2 50 8 75 4S105 3 118 6" stroke="#E0A050" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-dasharray="200" style="animation:ink 1.4s ease-out"/></svg><div style="font-size:clamp(14px,3cqw,22px);line-height:1.05;color:#F3EDE2">'+s+'</div>'}
+function setTitle(t,s){$('title').innerHTML='<div style="font-size:5.4cqw;line-height:.9;color:#FFF8EA">'+t+'</div><svg viewBox="0 0 120 10" style="display:block;width:55%;height:auto;margin:1px 0 2px"><path d="M2 6C25 2 50 8 75 4S105 3 118 6" stroke="#E0A050" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-dasharray="200" style="animation:ink 1.4s ease-out"/></svg><div style="font-size:3cqw;line-height:1.05;color:#F3EDE2">'+s+'</div>'}
 function signHtml(i,icon,label){return '<button class="sign" data-n="'+i+'" style="top:'+(36.5+i*10.5)+'%;transform:rotate('+[-1,.8,-.6,1,-.8][i]+'deg)"><i class="ti '+icon+'"></i>'+label+'</button>'}
 function start(){clearInterval(timer);fire.style.transform='scale(1)';cur=null;gs=null;paint(M.bewolkt);setTitle('Welkom','hoe is het weer<br>in jou vandaag?');$('home').style.display='none';
 $('signs').innerHTML=signHtml(0,'ti-adjustments-horizontal','Samenstellen')+signHtml(1,'ti-notebook','Groeiboek');const sg=$('signs').querySelectorAll('.sign');sg[0].onclick=()=>openCfg('storm');sg[1].onclick=openBook;
@@ -268,13 +298,13 @@ $('home').onclick=start;
 function addEntry(title,qa){book.unshift({t:Date.now(),m:cur,l:title,qa});saveBook()}
 function savedMsg(){put('<div class="big">Bewaard</div>Je antwoorden staan in je groeiboek, zodat je ze later kunt teruglezen.<div style="display:flex;gap:6px"><button id="vb">Bekijk groeiboek</button></div>');$('vb').onclick=openBook}
 function renderGuide(err){const e=P[gs.id],n=e.s.length,i=gs.step;
-put('<div class="meta">'+e.l+(n>1?' · vraag '+(i+1)+' van '+n:'')+'</div><div style="color:#F5EDDC;font-size:.95em;line-height:1.25">'+e.s[i]+'</div><textarea id="ga" style="height:46px" placeholder="Schrijf je antwoord..."></textarea>'+(err?'<div class="err">'+err+'</div>':'')+'<div style="display:flex;gap:6px">'+(i>0?'<button id="gb">Terug</button>':'')+'<button id="gn">'+(i<n-1?'Volgende':'Bewaar')+'</button></div>');
+put('<div class="meta">'+e.l+(n>1?' · vraag '+(i+1)+' van '+n:'')+'</div><div style="color:#F5EDDC;font-size:.95em;line-height:1.25">'+e.s[i]+'</div><textarea id="ga" style="height:7cqw" placeholder="Schrijf je antwoord..."></textarea>'+(err?'<div class="err">'+err+'</div>':'')+'<div style="display:flex;gap:6px">'+(i>0?'<button id="gb">Terug</button>':'')+'<button id="gn">'+(i<n-1?'Volgende':'Bewaar')+'</button></div>');
 const ta=$('ga');ta.value=gs.ans[i];ta.oninput=()=>{gs.ans[i]=ta.value;const er=say.querySelector('.err');if(er)er.remove()};
 if(i>0)$('gb').onclick=()=>{gs.ans[i]=ta.value;gs.step--;renderGuide()};
 $('gn').onclick=()=>{gs.ans[i]=ta.value;if(i<n-1){gs.step++;renderGuide();return}
 const qa=e.s.map((q,j)=>({q,a:gs.ans[j].trim()})).filter(x=>x.a);if(!qa.length){renderGuide('Schrijf eerst iets op om te bewaren.');return}addEntry(e.l,qa);gs=null;savedMsg()}}
 function askQ(e){let q=e.q[Math.floor(Math.random()*e.q.length)];
-const draw=err=>{put('<div class="meta">'+e.l+'</div><div style="color:#F5EDDC;font-size:.95em;line-height:1.25">'+q+'</div><textarea id="qa" style="height:46px" placeholder="Schrijf je antwoord..."></textarea>'+(err?'<div class="err">'+err+'</div>':'')+'<div style="display:flex;gap:6px"><button id="qn">Andere vraag</button><button id="qs">Bewaar</button></div>');
+const draw=err=>{put('<div class="meta">'+e.l+'</div><div style="color:#F5EDDC;font-size:.95em;line-height:1.25">'+q+'</div><textarea id="qa" style="height:7cqw" placeholder="Schrijf je antwoord..."></textarea>'+(err?'<div class="err">'+err+'</div>':'')+'<div style="display:flex;gap:6px"><button id="qn">Andere vraag</button><button id="qs">Bewaar</button></div>');
 const ta=$('qa');ta.oninput=()=>{const er=say.querySelector('.err');if(er)er.remove()};
 $('qn').onclick=()=>{let n=q;while(e.q.length>1&&n===q)n=e.q[Math.floor(Math.random()*e.q.length)];q=n;draw()};
 $('qs').onclick=()=>{const a=ta.value.trim();if(!a){draw('Schrijf eerst iets op om te bewaren.');return}addEntry(e.l,[{q,a}]);savedMsg()}};draw()}
@@ -344,4 +374,3 @@ start();
 </script>
 </body>
 </html>
-```
