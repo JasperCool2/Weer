@@ -25,8 +25,9 @@ body.locked .app{visibility:hidden}
 @media (orientation:portrait) and (max-width:700px){#turn{display:flex}}
 @keyframes snow{from{transform:translate(0,-20px)}to{transform:translate(-140px,390px)}}
 @keyframes rain{from{transform:translate(0,-20px)}to{transform:translate(-60px,390px)}}
-@keyframes flash{0%,92%,100%{opacity:0}94%,97%{opacity:.25}}
-@keyframes bolt{0%,92%,100%{opacity:0}94%,97%{opacity:.9}}
+@keyframes flash{0%,88%,100%{opacity:0}89%{opacity:.32}90.5%{opacity:.05}92%{opacity:.26}95%{opacity:0}}
+@keyframes bolt{0%,88%,100%{opacity:0}89%{opacity:1}90.5%{opacity:.15}92%{opacity:1}95%{opacity:0}}
+@keyframes cglow{0%,88%,100%{opacity:0}89%{opacity:.45}90.5%{opacity:.08}92%{opacity:.4}95%{opacity:0}}
 @keyframes sway{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
 @keyframes flick{0%,100%{transform:scale(1,1) rotate(-2deg)}33%{transform:scale(.9,1.12) rotate(3deg)}66%{transform:scale(1.06,.94) rotate(-1deg)}}
 @keyframes glow{50%{opacity:.5}}
@@ -183,36 +184,104 @@ function syncFs(){const b=$('fsb'),f=isFs();b.innerHTML='<i class="ti '+(f?'ti-m
 if(fsOK){$('fsb').style.display='flex';
 $('fsb').onclick=()=>{if(isFs()){(document.exitFullscreen||document.webkitExitFullscreen).call(document)}else{const r=(fsRoot.requestFullscreen||fsRoot.webkitRequestFullscreen).call(fsRoot);const lockLand=()=>{try{screen.orientation.lock('landscape').catch(()=>{})}catch(e){}};if(r&&r.then)r.then(lockLand).catch(()=>{});else lockLand()}};
 document.addEventListener('fullscreenchange',syncFs);document.addEventListener('webkitfullscreenchange',syncFs)}
-const Q1=["Waar word je echt blij van, en hoe vaak doe je dat?","Wat zou je graag vaker doen, en wat houdt je tegen?","Wat doe je als je nergens aan hoeft, en wat zegt dat over jou?","Welk compliment kreeg je onlangs, en klopt het?"];
-const Q2=["Wat zeg je tegen jezelf op een drukke dag, en helpt dat?","Wat heb je deze week goed gedaan?","Welke gewoonte geeft jou de meeste stress, en wat zou je eraan kunnen veranderen?","Wat kun je loslaten om meer rust te krijgen?"];
+const Q1=["Waar word je echt blij van, en hoe vaak doe je dat?","Wat zou je graag vaker doen, en wat houdt je tegen?","Wat doe je als je nergens aan hoeft, en wat zegt dat over jou?","Welk compliment kreeg je onlangs, en klopt het?",
+"Welke plek geeft je meteen een goed gevoel, en waarom?","Met wie voel je je het meest jezelf?","Wat zou je doen met een helemaal vrije dag?","Welk liedje maakt je meteen vrolijk, en wat roept het bij je op?",
+"Waar ben je de laatste tijd nieuwsgierig naar?","Wat heb je onlangs voor het eerst gedaan, en hoe was dat?","Waar kijk je deze maand naar uit?","Waar kun je om lachen, ook als het tegenzit?"];
+const Q2=["Wat zeg je tegen jezelf op een drukke dag, en helpt dat?","Wat heb je deze week goed gedaan?","Welke gewoonte geeft jou de meeste stress, en wat zou je eraan kunnen veranderen?","Wat kun je loslaten om meer rust te krijgen?",
+"Wanneer heb je het gevoel dat je het niet goed genoeg doet, en klopt dat?","Wat zou je doen als je je minder druk maakte om wat anderen denken?","Welke verwachting van jezelf mag wat zachter?","Waar zeg je ja tegen terwijl je eigenlijk rust nodig hebt?",
+"Wat helpt je om na een drukke dag echt af te schakelen?","Wanneer voelde je je laatst echt kalm, en wat was er toen anders?","Wat wil je minder doen, zodat er ruimte komt voor wat je belangrijk vindt?","Welke zorg van vorig jaar is nu verdwenen, en wat leert je dat?"];
+const PH=[["Adem in",4,1.6],["Houd vast",4,1.6],["Adem uit",6,1]];
 const P={
 adem:{i:"ti-wind",l:"Adem",b:"breath",t:"Adem mee met het vuurtje: in als het groeit, uit als het zakt.",d:"Rustig ademen met een lange uitademing remt je stressreactie af. Het vuurtje geeft het tempo aan."},
+vierkant:{i:"ti-square",l:"Vierkant",b:"breath",ph:[["Adem in",4,1.6],["Houd vast",4,1.6],["Adem uit",4,1],["Houd vast",4,1]],t:"Adem in een vierkant: vier tellen in, vier vast, vier uit, vier vast. Het vuurtje telt mee.",d:"Vierkant ademen geeft je hoofd een vast ritme om je aan vast te houden."},
+zucht:{i:"ti-lungs",l:"Zucht",b:"breath",ph:[["Adem in",2,1.4],["Nog wat in",1,1.65],["Lang uit",6,1]],t:"Twee keer in door je neus, de tweede keer nog een klein beetje erbij. Dan lang en langzaam uit door je mond, als een diepe zucht.",d:"Een dubbele inademing met een lange zucht ontspant je vaak al na een paar keer."},
 aarden:{i:"ti-hand-stop",l:"Aarden",b:"text",t:"Noem rustig: 5 dingen die je ziet, 4 die je voelt, 3 die je hoort, 2 die je ruikt en 1 die je proeft.",d:"Je zintuigen langsgaan haalt je uit je hoofd en terug in het hier en nu."},
-schrijf:{i:"ti-pencil",l:"Schrijf",b:"write",t:"Wat raast er door je heen? Laat het hier uitwaaien. Dit wordt niet bewaard.",d:"Van je af schrijven geeft gedachten een plek, zodat ze minder rondmalen."},
-stap:{i:"ti-shoe",l:"Eén stap",b:"text",t:"Wat is de kleinste stap die je nu kunt zetten? De rest mag even wachten. Ook dit weer gaat voorbij.",d:"Als alles te veel voelt, helpt het om je op één kleine, haalbare stap te richten."},
-zorgen:{i:"ti-umbrella",l:"Zorgen",b:"write",t:"Welke gedachten blijven rondwaaien? Leg ze hier neer, onder de bladeren. Dit wordt niet bewaard.",d:"Zorgen opschrijven maakt ruimte in je hoofd. Je hoeft ze even niet vast te houden."},
-beweeg:{i:"ti-walk",l:"Beweeg",b:"text",t:"Loop vijf minuten, rek je uit of schud je armen los. Beweging laat de onrust wegwaaien, net als de wind.",d:"Bewegen helpt je lichaam de spanning van stress kwijt te raken."},
+kleuren:{i:"ti-palette",l:"Kleuren",b:"text",t:"Kijk om je heen en zoek vijf dingen die blauw zijn. Daarna vijf groene dingen. Neem bij elk ding even de tijd.",d:"Bewust rondkijken trekt je aandacht naar buiten, weg van de onrust."},
+water:{i:"ti-glass-full",l:"Water",b:"text",t:"Pak een glas water en drink het langzaam op. Voel elke slok. Even niets anders.",d:"Even iets kleins voor je lichaam doen is een rustpunt in een volle dag."},
 wortel:{i:"ti-plant-2",l:"Wortel je",b:"text",t:"Zet je voeten stevig op de grond, als wortels van een boom. Voel hoe de grond je draagt en adem langzaam uit.",d:"Je voeten en de grond bewust voelen geeft stevigheid als je onrustig bent."},
 spier:{i:"ti-stretching",l:"Ontspan",b:"text",t:"Span je schouders vijf tellen aan en laat dan los. Doe hetzelfde met je handen en je kaak. Merk het verschil.",d:"Spieren aanspannen en loslaten laat je duidelijk voelen hoe ontspanning voelt."},
+lichaam:{i:"ti-body-scan",l:"Bodyscan",b:"text",t:"Ga met je aandacht langzaam door je lichaam, van je kruin tot je tenen. Waar voel je spanning? Adem er even naartoe en laat het een beetje zachter worden.",d:"Je lichaam aftasten helpt je spanning op te merken voordat die zich opstapelt."},
+beweeg:{i:"ti-walk",l:"Beweeg",b:"text",t:"Loop vijf minuten, rek je uit of schud je armen los. Beweging laat de onrust wegwaaien, net als de wind.",d:"Bewegen helpt je lichaam de spanning van stress kwijt te raken."},
+neurie:{i:"ti-microphone",l:"Neurie",b:"text",t:"Neurie zachtjes een liedje, of maak een lange, lage 'mmm'. Voel het trillen in je borst en keel. Doe het een paar keer.",d:"Neuriën verlengt je uitademing en kan je lichaam helpen kalmeren."},
+schrijf:{i:"ti-pencil",l:"Schrijf",b:"write",t:"Wat raast er door je heen? Laat het hier uitwaaien. Dit wordt niet bewaard.",d:"Van je af schrijven geeft gedachten een plek, zodat ze minder rondmalen."},
+zorgen:{i:"ti-umbrella",l:"Zorgen",b:"write",t:"Welke gedachten blijven rondwaaien? Leg ze hier neer, onder de bladeren. Dit wordt niet bewaard.",d:"Zorgen opschrijven maakt ruimte in je hoofd. Je hoeft ze even niet vast te houden."},
+feit:{i:"ti-scale",l:"Feit?",b:"write",t:"Welke gedachte zit je het meest dwars? Is het een feit, of een gevoel? Wat zou je zeggen tegen een vriend die dit denkt? Dit wordt niet bewaard.",d:"Een gedachte onderzoeken maakt hem vaak kleiner dan hij voelt."},
+blad:{i:"ti-leaf",l:"Blaadjes",b:"text",t:"Stel je een beekje voor met blaadjes die voorbijdrijven. Leg elke gedachte die opkomt op een blaadje en kijk hoe het wegdrijft. Je hoeft er niets mee.",d:"Gedachten laten wegdrijven helpt je ze op te merken zonder erin mee te gaan."},
+tellen:{i:"ti-123",l:"Tel terug",b:"text",t:"Tel langzaam terug van 100, in stappen van drie: 100, 97, 94... Raak je de tel kwijt? Begin gewoon opnieuw, dat hoort erbij.",d:"Een rustige telopdracht geeft je hoofd iets anders te doen dan piekeren."},
+later:{i:"ti-clock",l:"Zorgtijd",b:"text",t:"Spreek met jezelf een vast kwartiertje af om te piekeren, bijvoorbeeld vanavond om zeven uur. Komt er nu een zorg op? Zeg tegen jezelf: daar kijk ik straks naar.",d:"Piekeren uitstellen naar een vast moment geeft je de rest van de dag meer rust."},
+stap:{i:"ti-shoe",l:"Eén stap",b:"text",t:"Wat is de kleinste stap die je nu kunt zetten? De rest mag even wachten. Ook dit weer gaat voorbij.",d:"Als alles te veel voelt, helpt het om je op één kleine, haalbare stap te richten."},
 plek:{i:"ti-home-heart",l:"Plekje",b:"text",t:"Denk aan een plek waar je je veilig voelt. Wat zie, hoor en ruik je daar? Blijf er even, zo lang als je wilt.",d:"Een veilige plek in gedachten helpt je lichaam tot rust te komen."},
 hart:{i:"ti-heart-handshake",l:"Zachtjes",b:"text",t:"Leg een hand op je hart. Zeg tegen jezelf wat je tegen een goede vriend zou zeggen: het is oké dat het nu zwaar is.",d:"Vriendelijk zijn voor jezelf verzacht stress, in plaats van jezelf op te jagen."},
-moment:{i:"ti-camera",l:"Moment",b:"guide",s:["Wat was een fijn moment van deze week?","Wat maakte het fijn, en hoe krijg je daar meer van?"],d:"Stilstaan bij fijne momenten maakt ze sterker en helpt je ze vaker op te zoeken."},
-dankbaar:{i:"ti-heart",l:"Dankbaar",b:"guide",s:["Noem drie dingen waar je vandaag dankbaar voor bent.","Welke daarvan had je zelf in de hand?"],d:"Dankbaarheid richt je aandacht op wat goed gaat, en op je eigen rol daarin."},
-opladen:{i:"ti-battery-charging",l:"Opladen",b:"guide",s:["Wat gaf je de laatste tijd rust of energie?","Wanneer maak je daar deze week tijd voor?"],d:"Weten wat je energie geeft helpt je stress een stap voor te blijven."},
-kracht:{i:"ti-sparkles",l:"Sterktes",b:"guide",s:["Wat ging er de laatste tijd goed dankzij jou?","Welke eigenschap hielp daarbij, en waar kun je die vaker inzetten?"],d:"Je sterke kanten kennen helpt je ze bewust in te zetten als het tegenzit."},
-hielp:{i:"ti-lifebuoy",l:"Wat hielp",b:"guide",s:["Denk aan een stressvolle dag. Wat hielp je toen?","Hoe zorg je dat je dat de volgende keer sneller inzet?"],d:"Wat eerder hielp bij stress werkt vaak opnieuw. Zo bouw je je eigen gereedschapskist."},
-signalen:{i:"ti-activity",l:"Signalen",b:"guide",s:["Waaraan merk jij dat stress opbouwt? Denk aan je lichaam, je slaap en je gedachten.","Wat doe je zodra je zo'n signaal opmerkt?"],d:"Hoe eerder je stress herkent, hoe makkelijker je kunt bijsturen."},
-grenzen:{i:"ti-fence",l:"Grenzen",b:"guide",s:["Wanneer zei je de laatste tijd ja terwijl je eigenlijk nee bedoelde?","Hoe zeg je de volgende keer op een rustige manier nee?"],d:"Op tijd je grenzen aangeven voorkomt dat stress zich opstapelt."},
-steun:{i:"ti-users",l:"Steun",b:"guide",s:["Wie geeft jou steun als het zwaar is?","Wanneer laat je diegene weten dat je dat waardeert?"],d:"Mensen om je heen zijn een belangrijke buffer tegen stress."},
-zelfzorg:{i:"ti-mug",l:"Zelfzorg",b:"guide",s:["Wat helpt jou het best om op te laden?","Op welk moment deze week doe je dat?"],d:"Zelfzorg een vast moment geven zorgt dat het er ook echt van komt."},
-waarden:{i:"ti-compass",l:"Waarden",b:"guide",s:["Noem drie dingen die je echt belangrijk vindt.","Waar zag je die deze week terug, en waar juist niet?"],d:"Leven naar wat je belangrijk vindt geeft richting en rust."},
-zaadje:{i:"ti-seeding",l:"Zaadje",b:"guide",s:["Waar ben je nieuwsgierig naar, of waar heb je zin in?","Wat is een eerste kleine stap, en wanneer zet je die?"],d:"Een kleine stap naar iets waar je zin in hebt geeft energie, zonder grote druk."},
-les:{i:"ti-school",l:"Ontdekt",b:"guide",s:["Wat heb je de laatste tijd over jezelf ontdekt?","Wat doe je daar voortaan mee?"],d:"Terugkijken op wat je ontdekt helpt je stap voor stap te groeien."},
-groei:{i:"ti-plant",l:"Groei",b:"guide",s:["Waar ga je nu beter mee om dan een jaar geleden?","Wat heb je zelf gedaan om dat te bereiken?"],d:"Zien hoe ver je al gekomen bent geeft vertrouwen voor de volgende keer."},
+praat:{i:"ti-message-circle",l:"Iemand",b:"text",t:"Stuur iemand die je vertrouwt een berichtje: 'Heb je even tijd?' Je hoeft het niet alleen te dragen. Is het echt te zwaar? Bel of chat met 113, gratis via 0800-0113.",d:"Contact met iemand die je vertrouwt is een van de sterkste buffers tegen stress."},
+moment:{i:"ti-camera",l:"Moment",b:"guide",s:[
+["Wat was een fijn moment van deze week?","Wat maakte het fijn, en hoe krijg je daar meer van?"],
+["Wanneer moest je de laatste tijd hardop lachen?","Wie of wat hoorde daarbij?"],
+["Welk klein moment van vandaag wil je onthouden?","Wat zag, hoorde of voelde je toen?"],
+["Wanneer voelde je je deze week echt op je plek?","Wat zegt dat over wat je nodig hebt?"]],d:"Stilstaan bij fijne momenten maakt ze sterker en helpt je ze vaker op te zoeken."},
+dankbaar:{i:"ti-heart",l:"Dankbaar",b:"guide",s:[
+["Noem drie dingen waar je vandaag dankbaar voor bent.","Welke daarvan had je zelf in de hand?"],
+["Wie heeft je deze week geholpen, groot of klein?","Hoe zou je diegene kunnen bedanken?"],
+["Wat is iets gewoons waar je blij mee bent, maar dat je vaak vergeet?","Hoe zou je dag eruitzien zonder?"],
+["Wat ging er vandaag beter dan je had verwacht?","Wat droeg jij daar zelf aan bij?"]],d:"Dankbaarheid richt je aandacht op wat goed gaat, en op je eigen rol daarin."},
+opladen:{i:"ti-battery-charging",l:"Opladen",b:"guide",s:[
+["Wat gaf je de laatste tijd rust of energie?","Wanneer maak je daar deze week tijd voor?"],
+["Bij welke activiteit vergeet je de tijd?","Wanneer deed je dat voor het laatst?"],
+["Wat kost jou de laatste tijd de meeste energie?","Wat kun je daar een klein beetje aan veranderen?"],
+["Hoe ziet voor jou een echt rustige avond eruit?","Wat heb je nodig om die deze week te plannen?"]],d:"Weten wat je energie geeft helpt je stress een stap voor te blijven."},
+kracht:{i:"ti-sparkles",l:"Sterktes",b:"guide",s:[
+["Wat ging er de laatste tijd goed dankzij jou?","Welke eigenschap hielp daarbij, en waar kun je die vaker inzetten?"],
+["Wat zouden je vrienden noemen als je beste eigenschap?","Waar zag je die eigenschap deze week terug?"],
+["Welk probleem heb je ooit opgelost waar je trots op bent?","Welke kracht van jou hielp daarbij?"],
+["Waar ben je goed in zonder dat het je moeite kost?","Hoe kun je dat vaker gebruiken?"]],d:"Je sterke kanten kennen helpt je ze bewust in te zetten als het tegenzit."},
+hielp:{i:"ti-lifebuoy",l:"Wat hielp",b:"guide",s:[
+["Denk aan een stressvolle dag. Wat hielp je toen?","Hoe zorg je dat je dat de volgende keer sneller inzet?"],
+["Wat zei je ooit tegen jezelf dat je echt geholpen heeft?","Hoe kun je dat makkelijk terugvinden als je het nodig hebt?"],
+["Wie of wat stelde je gerust in een moeilijke periode?","Hoe kun je dat nu ook inzetten?"],
+["Welke kleine gewoonte maakt een zware dag lichter?","Hoe herinner je jezelf eraan?"]],d:"Wat eerder hielp bij stress werkt vaak opnieuw. Zo bouw je je eigen gereedschapskist."},
+signalen:{i:"ti-activity",l:"Signalen",b:"guide",s:[
+["Waaraan merk jij dat stress opbouwt? Denk aan je lichaam, je slaap en je gedachten.","Wat doe je zodra je zo'n signaal opmerkt?"],
+["Wat doe je vaker, of juist minder, als je gestrest raakt?","Wie om je heen merkt dat als eerste?"],
+["Waar in je lichaam voel je spanning het eerst?","Wat helpt om die plek te ontspannen?"],
+["Hoe slaap je in drukke weken, vergeleken met rustige?","Wat zou je avonden rustiger maken?"]],d:"Hoe eerder je stress herkent, hoe makkelijker je kunt bijsturen."},
+grenzen:{i:"ti-fence",l:"Grenzen",b:"guide",s:[
+["Wanneer zei je de laatste tijd ja terwijl je eigenlijk nee bedoelde?","Hoe zeg je de volgende keer op een rustige manier nee?"],
+["Waar zou je meer ruimte voor jezelf willen?","Wat moet je daarvoor tegen iemand zeggen?"],
+["Bij wie vind je het lastig om nee te zeggen?","Wat zou je kunnen zeggen dat vriendelijk én duidelijk is?"],
+["Wat heb je op je genomen dat eigenlijk niet bij jou hoort?","Bij wie kun je dat teruglegen?"]],d:"Op tijd je grenzen aangeven voorkomt dat stress zich opstapelt."},
+steun:{i:"ti-users",l:"Steun",b:"guide",s:[
+["Wie geeft jou steun als het zwaar is?","Wanneer laat je diegene weten dat je dat waardeert?"],
+["Bij wie kun je helemaal jezelf zijn?","Wanneer zie of spreek je diegene weer?"],
+["Voor wie ben jij een steun?","Wat geeft het jou om er voor iemand te zijn?"],
+["Wie zou je meer in vertrouwen willen nemen?","Wat is een eerste kleine stap daarvoor?"]],d:"Mensen om je heen zijn een belangrijke buffer tegen stress."},
+zelfzorg:{i:"ti-mug",l:"Zelfzorg",b:"guide",s:[
+["Wat helpt jou het best om op te laden?","Op welk moment deze week doe je dat?"],
+["Wat doe je voor jezelf als niemand kijkt?","Hoe maak je daar deze week ruimte voor?"],
+["Welke zelfzorg schiet er het eerst bij in als het druk wordt?","Hoe bewaar je daar een klein vast moment voor?"],
+["Wat zou je een vriend aanraden die net zo druk is als jij?","Welk advies daarvan neem je zelf ter harte?"]],d:"Zelfzorg een vast moment geven zorgt dat het er ook echt van komt."},
+waarden:{i:"ti-compass",l:"Waarden",b:"guide",s:[
+["Noem drie dingen die je echt belangrijk vindt.","Waar zag je die deze week terug, en waar juist niet?"],
+["Hoe hoop je dat mensen over tien jaar over je praten?","Wat doe je nu al dat daarbij past?"],
+["Wanneer was je laatst trots op een keuze die je maakte?","Welke waarde zat daarachter?"],
+["Wat vind jij belangrijk in vriendschap?","Hoe laat je dat zelf zien?"]],d:"Leven naar wat je belangrijk vindt geeft richting en rust."},
+zaadje:{i:"ti-seeding",l:"Zaadje",b:"guide",s:[
+["Waar ben je nieuwsgierig naar, of waar heb je zin in?","Wat is een eerste kleine stap, en wanneer zet je die?"],
+["Wat zou je doen als je zeker wist dat het niet kon mislukken?","Welk klein stukje daarvan kun je nu al proberen?"],
+["Welke vaardigheid zou je graag leren?","Wie of wat kan je daarbij helpen?"],
+["Wat deed je als kind graag, en mis je dat soms?","Hoe haal je daar weer een beetje van terug?"]],d:"Een kleine stap naar iets waar je zin in hebt geeft energie, zonder grote druk."},
+les:{i:"ti-school",l:"Ontdekt",b:"guide",s:[
+["Wat heb je de laatste tijd over jezelf ontdekt?","Wat doe je daar voortaan mee?"],
+["Welke fout heeft je iets waardevols geleerd?","Hoe zou je er nu mee omgaan?"],
+["Wat weet je nu over stress dat je vroeger niet wist?","Hoe merk je dat in je dag?"],
+["Wat verraste je deze week aan jezelf?","Wat wil je daarvan meenemen?"]],d:"Terugkijken op wat je ontdekt helpt je stap voor stap te groeien."},
+groei:{i:"ti-plant",l:"Groei",b:"guide",s:[
+["Waar ga je nu beter mee om dan een jaar geleden?","Wat heb je zelf gedaan om dat te bereiken?"],
+["Wat vond je vroeger eng en durf je nu wel?","Wat hielp je om die stap te zetten?"],
+["Welke moeilijke periode ben je doorgekomen?","Wat zegt dat over je veerkracht?"],
+["Wat zou je jongere zelf willen vertellen over hoe het nu gaat?","En wat zou je toekomstige zelf tegen je zeggen?"]],d:"Zien hoe ver je al gekomen bent geeft vertrouwen voor de volgende keer."},
 nieuws:{i:"ti-bulb",l:"Vraag",b:"q",q:Q1,d:"Een wisselende vraag over wat je blij maakt en wat je graag doet."},
 diep:{i:"ti-question-mark",l:"Verdiep",b:"q",q:Q2,d:"Een wisselende vraag die iets dieper ingaat op stress en rust."},
 muziek:{i:"ti-music",l:"Muziek",b:"music",d:"Kampvuurklanken of rustige muziek helpen je lichaam te ontspannen."}};
-const CALM=["adem","aarden","schrijf","stap","zorgen","beweeg","wortel","spier","plek","hart","muziek"];
+const CALM=["adem","vierkant","zucht","aarden","kleuren","water","wortel","spier","lichaam","beweeg","neurie","schrijf","zorgen","feit","blad","tellen","later","stap","plek","hart","praat","muziek"];
 const GROW=["moment","dankbaar","opladen","kracht","hielp","signalen","grenzen","steun","zelfzorg","waarden","zaadje","les","groei","nieuws","diep","muziek"];
 const pool=k=>(k==='storm'||k==='regen')?CALM:GROW;
 const DEF={storm:["adem","aarden","schrijf","stap","muziek"],regen:["adem","zorgen","beweeg","wortel","muziek"],bewolkt:["signalen","opladen","zelfzorg","nieuws","muziek"],zon:["moment","waarden","zaadje","diep","muziek"],regenboog:["dankbaar","hielp","kracht","groei","muziek"]};
@@ -255,12 +324,19 @@ if(m.many)L=L.concat([[40,70,70,16,1],[330,30,110,22,0],[420,60,60,12,1],[600,80
 if(m.sun)L=[[120,40,60,14,0],[170,32,40,12,1],[460,70,50,10,0]];
 if(m.bow)L=[[80,30,80,18,0],[140,22,60,16,1],[520,40,70,14,0],[600,30,60,16,1]];
 L.forEach((e,i)=>{h+='<ellipse cx="'+e[0]+'" cy="'+e[1]+'" rx="'+e[2]+'" ry="'+e[3]+'" fill="'+c[e[4]]+'" style="--dx:'+(i%2?18:-22)+'px;animation:drift '+(10+i%4*3)+'s ease-in-out infinite"/>'});return h+'</g>'}
+function lightning(){const MAIN='M450 24L440 58L455 64L432 106L447 112L422 160L437 166L414 216L428 222L408 292',BR='M455 64L474 86L468 93L488 116M447 112L466 132L460 140L474 160M422 160L404 180L410 186L396 204';
+return '<defs><filter id="bblur" x="-50%" y="-20%" width="200%" height="140%"><feGaussianBlur stdDeviation="3"/></filter></defs>'
++'<ellipse cx="458" cy="24" rx="100" ry="34" fill="#AFC0E0" filter="url(#bblur)" style="opacity:0;animation:cglow 6s infinite"/>'
++'<g fill="none" stroke-linejoin="miter" stroke-linecap="round" style="opacity:0;animation:bolt 6s infinite">'
++'<path d="'+MAIN+'" stroke="#9DB4F0" stroke-width="13" opacity=".5" filter="url(#bblur)"/><path d="'+BR+'" stroke="#9DB4F0" stroke-width="7" opacity=".4" filter="url(#bblur)"/>'
++'<path d="'+MAIN+'" stroke="#DCE6FF" stroke-width="4.5"/><path d="'+BR+'" stroke="#DCE6FF" stroke-width="2.4"/>'
++'<path d="'+MAIN+'" stroke="#FFFFFF" stroke-width="1.8"/><path d="'+BR+'" stroke="#FFFFFF" stroke-width="1"/></g>'}
 function back(m){let h='';
 if(m.bow){const bc=["#B5654F","#C9955A","#C9B66A","#7F9466","#6E8FA6","#7E6E9A"];h+='<g opacity=".42" fill="none">';bc.forEach((c,i)=>{const r=236-i*8;h+='<path d="M'+(330-r)+' 300A'+r+' '+r+' 0 0 1 '+(330+r)+' 300" stroke="'+c+'" stroke-width="8"/>'});h+='</g>'}
 if(m.sun)h+='<g class="vb" style="transform-origin:604px 30px;animation:spin 40s linear infinite"><g stroke="#E3C48E" stroke-width="3" stroke-linecap="round" opacity=".5">'+[0,45,90,135,180,225,270,315].map(a=>{const r=a*Math.PI/180;return '<line x1="'+(604+Math.cos(r)*28)+'" y1="'+(30+Math.sin(r)*28)+'" x2="'+(604+Math.cos(r)*38)+'" y2="'+(30+Math.sin(r)*38)+'"/>'}).join('')+'</g></g><circle cx="604" cy="30" r="30" fill="#E3C48E" opacity=".18"/><circle cx="604" cy="30" r="20" fill="#E3C48E"/>';
 if(m.hope)h+='<g style="animation:hope 7s ease-in-out infinite"><ellipse cx="560" cy="252" rx="58" ry="16" fill="#7E98B0" opacity=".4"/><ellipse cx="560" cy="256" rx="40" ry="9" fill="#C9D6E0" opacity=".3"/><circle cx="572" cy="250" r="5" fill="#E3C48E" opacity=".7"/><path d="M512 270C535 260 560 263 585 262S610 258 625 262V280H512Z" fill="#7F9466" opacity=".45"/></g><g fill="#E8DCC4" style="animation:rays 6s ease-in-out infinite"><polygon points="570,250 540,285 552,285"/><polygon points="574,250 590,285 602,285"/></g><g fill="'+m.sky[0]+'"><ellipse cx="505" cy="238" rx="40" ry="10"/><ellipse cx="620" cy="236" rx="44" ry="12"/><ellipse cx="562" cy="232" rx="40" ry="8"/></g>';
 h+=clouds(m);
-if(m.bolt)h+='<polygon points="200,44 190,68 198,68 188,96 210,62 202,62 210,44" fill="#E8D59A" style="animation:bolt 6s infinite"/>';
+if(m.bolt)h+=lightning();
 return h}
 function gdeco(m){let h='';
 if(m.pre==='snow')h+='<g fill="#C9CED2" opacity=".55"><ellipse cx="40" cy="330" rx="22" ry="3"/><ellipse cx="150" cy="327" rx="16" ry="2.5"/><ellipse cx="410" cy="328" rx="20" ry="3"/><ellipse cx="600" cy="344" rx="26" ry="3"/><ellipse cx="200" cy="346" rx="18" ry="2.5"/></g>';
@@ -297,12 +373,16 @@ $('home').style.display='flex';put(m.intro)}
 $('home').onclick=start;
 function addEntry(title,qa){book.unshift({t:Date.now(),m:cur,l:title,qa});saveBook()}
 function savedMsg(){put('<div class="big">Bewaard</div>Je antwoorden staan in je groeiboek, zodat je ze later kunt teruglezen.<div style="display:flex;gap:6px"><button id="vb">Bekijk groeiboek</button></div>');$('vb').onclick=openBook}
-function renderGuide(err){const e=P[gs.id],n=e.s.length,i=gs.step;
-put('<div class="meta">'+e.l+(n>1?' · vraag '+(i+1)+' van '+n:'')+'</div><div style="color:#F5EDDC;font-size:.95em;line-height:1.25">'+e.s[i]+'</div><textarea id="ga" style="height:7cqw" placeholder="Schrijf je antwoord..."></textarea>'+(err?'<div class="err">'+err+'</div>':'')+'<div style="display:flex;gap:6px">'+(i>0?'<button id="gb">Terug</button>':'')+'<button id="gn">'+(i<n-1?'Volgende':'Bewaar')+'</button></div>');
+const lastSet={};
+function pickSet(id,avoid){const n=P[id].s.length;let k=Math.floor(Math.random()*n);if(n>1)while(k===avoid)k=Math.floor(Math.random()*n);return k}
+function newGuide(id,avoid){const k=pickSet(id,avoid);lastSet[id]=k;gs={id,k,step:0,ans:P[id].s[k].map(()=>'')}}
+function renderGuide(err){const e=P[gs.id],qs=e.s[gs.k],n=qs.length,i=gs.step;
+put('<div class="meta">'+e.l+(n>1?' · vraag '+(i+1)+' van '+n:'')+'</div><div style="color:#F5EDDC;font-size:.95em;line-height:1.25">'+qs[i]+'</div><textarea id="ga" style="height:7cqw" placeholder="Schrijf je antwoord..."></textarea>'+(err?'<div class="err">'+err+'</div>':'')+'<div style="display:flex;gap:6px">'+(i>0?'<button id="gb">Terug</button>':(e.s.length>1?'<button id="gr">Andere vraag</button>':''))+'<button id="gn">'+(i<n-1?'Volgende':'Bewaar')+'</button></div>');
 const ta=$('ga');ta.value=gs.ans[i];ta.oninput=()=>{gs.ans[i]=ta.value;const er=say.querySelector('.err');if(er)er.remove()};
 if(i>0)$('gb').onclick=()=>{gs.ans[i]=ta.value;gs.step--;renderGuide()};
+else if($('gr'))$('gr').onclick=()=>{newGuide(gs.id,gs.k);renderGuide()};
 $('gn').onclick=()=>{gs.ans[i]=ta.value;if(i<n-1){gs.step++;renderGuide();return}
-const qa=e.s.map((q,j)=>({q,a:gs.ans[j].trim()})).filter(x=>x.a);if(!qa.length){renderGuide('Schrijf eerst iets op om te bewaren.');return}addEntry(e.l,qa);gs=null;savedMsg()}}
+const qa=qs.map((q,j)=>({q,a:gs.ans[j].trim()})).filter(x=>x.a);if(!qa.length){renderGuide('Schrijf eerst iets op om te bewaren.');return}addEntry(e.l,qa);gs=null;savedMsg()}}
 function askQ(e){let q=e.q[Math.floor(Math.random()*e.q.length)];
 const draw=err=>{put('<div class="meta">'+e.l+'</div><div style="color:#F5EDDC;font-size:.95em;line-height:1.25">'+q+'</div><textarea id="qa" style="height:7cqw" placeholder="Schrijf je antwoord..."></textarea>'+(err?'<div class="err">'+err+'</div>':'')+'<div style="display:flex;gap:6px"><button id="qn">Andere vraag</button><button id="qs">Bewaar</button></div>');
 const ta=$('qa');ta.oninput=()=>{const er=say.querySelector('.err');if(er)er.remove()};
@@ -310,9 +390,9 @@ $('qn').onclick=()=>{let n=q;while(e.q.length>1&&n===q)n=e.q[Math.floor(Math.ran
 $('qs').onclick=()=>{const a=ta.value.trim();if(!a){draw('Schrijf eerst iets op om te bewaren.');return}addEntry(e.l,[{q,a}]);savedMsg()}};draw()}
 function exercise(btn){clearInterval(timer);fire.style.transform='scale(1)';gs=null;document.querySelectorAll('.sign').forEach(x=>x.classList.remove('on'));btn.classList.add('on');const id=sel[cur][btn.dataset.n],e=P[id];
 if(e.b==='music')musicPanel();
-else if(e.b==='breath'){put(e.t+'<div class="big" id="bt"></div><button id="bs">Begin</button>');$('bs').onclick=breathe}
+else if(e.b==='breath'){put(e.t+'<div class="big" id="bt"></div><button id="bs">Begin</button>');$('bs').onclick=()=>breathe(e.ph||PH)}
 else if(e.b==='write')put(e.t+'<textarea placeholder="Schrijf hier... alleen voor jou"></textarea>');
-else if(e.b==='guide'){gs={id,step:0,ans:e.s.map(()=>'')};renderGuide()}
+else if(e.b==='guide'){newGuide(id,lastSet[id]);renderGuide()}
 else if(e.b==='q')askQ(e);
 else put(e.t)}
 function fmt(t){const d=new Date(t);return d.toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'})+' · '+d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'})}
@@ -347,9 +427,9 @@ else{if(a.length>=MAX)warn='vol, haal er eerst één weg';else{a.push(id);a.sort
 $('cd').onclick=()=>{sel[cm]=DEF[cm].slice();warn='';saveSel();renderCfg()};
 $('ck').onclick=closeCfg}
 function closeCfg(){$('cfg').style.display='none'}
-function breathe(){clearInterval(timer);const t=$('bt'),bs=$('bs');if(bs)bs.remove();let s=0;const ph=[["Adem in",4,1.6],["Houd vast",4,1.6],["Adem uit",6,1]];
-const step=()=>{const p=ph[s%3];fire.style.transitionDuration=p[1]+'s';fire.style.transform='scale('+p[2]+')';let r=p[1];t.textContent=p[0]+' · '+r;
-clearInterval(timer);timer=setInterval(()=>{r--;if(r>0)t.textContent=p[0]+' · '+r;else{s++;if(s>=15){clearInterval(timer);t.textContent='Goed gedaan';fire.style.transform='scale(1)'}else step()}},1000)};step()}
+function breathe(ph){clearInterval(timer);const t=$('bt'),bs=$('bs');if(bs)bs.remove();let s=0;const N=ph.length*5;
+const step=()=>{const p=ph[s%ph.length];fire.style.transitionDuration=p[1]+'s';fire.style.transform='scale('+p[2]+')';let r=p[1];t.textContent=p[0]+' · '+r;
+clearInterval(timer);timer=setInterval(()=>{r--;if(r>0)t.textContent=p[0]+' · '+r;else{s++;if(s>=N){clearInterval(timer);t.textContent='Goed gedaan';fire.style.transform='scale(1)'}else step()}},1000)};step()}
 const LK=[["ti-piano","Rustige pianomuziek","rustige piano muziek ontspannen"],["ti-cloud-rain","Regen en natuurgeluiden","regen natuur geluiden ontspannen"],["ti-player-play","Geleide ademhaling (video)","geleide ademhaling oefening nederlands"]];
 function go(q){window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(q),'_blank')}
 function musicPanel(){let h='Luister even mee met het bos.<button id="mt">'+(snd?'Stop kampvuurklanken':'Speel kampvuurklanken')+'</button><div style="font-size:.85em;margin-top:8px;color:#CFC8BA">of kijk en luister elders:</div>';
